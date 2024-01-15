@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        #canvas {
+            border: 2px solid #ccc;
+        }
+
+        #sidebar {
+            width: 80px;
+            background-color: #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .tool {
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        #colors {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <title>Drawing Dashboard</title>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
+    <div id="sidebar">
+        <div class="tool" onclick="selectPen()">
+            ✏️
+        </div>
+        <div class="tool" onclick="selectEraser()">
+            🧽
+        </div>
+        <div id="colors">
+            <div class="color" style="background-color: black" onclick="selectColor('black')"></div>
+            <div class="color" style="background-color: red" onclick="selectColor('red')"></div>
+            <div class="color" style="background-color: green" onclick="selectColor('green')"></div>
+            <div class="color" style="background-color: blue" onclick="selectColor('blue')"></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let drawing = false;
+        let eraser = false;
+        let penColor = 'black';
+
+        function startDrawing(e) {
+            drawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            context.beginPath();
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+
+            context.lineWidth = eraser ? 20 : 2;
+            context.lineCap = 'round';
+            context.strokeStyle = eraser ? '#f0f0f0' : penColor;
+
+            context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        function selectPen() {
+            eraser = false;
+        }
+
+        function selectEraser() {
+            eraser = true;
+        }
+
+        function selectColor(color) {
+            penColor = color;
+            eraser = false;
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+    </script>
+</body>
+</html>
